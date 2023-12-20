@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Uuid;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Uuid, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +21,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'contact_no',
+        'role_id',
         'password',
     ];
 
@@ -42,4 +45,32 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function scopeFilter($query, array $filters)
+    {
+        $search = $filters['search'] ?? false;
+        $query
+            ->when($filters['search'] ?? false, 
+            function($query) use($search) {
+                $query->where(function($query) use($search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%')
+                        ->orWhere('contact_no', 'like', '%' . $search . '%')
+                        ->orWhereHas('role', function ($subQuery) use ($search) {
+                            $subQuery->where('name', 'like', '%' . $search . '%');
+                        });
+                });
+            }
+        );
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
 }
