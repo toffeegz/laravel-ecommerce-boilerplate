@@ -8,4 +8,5 @@ Route::prefix('users')->group(function() {
     Route::get('/{user}', [UserController::class, 'show'])->name('user.show');
     Route::put('/{user}', [UserController::class, 'update'])->name('user.update');
     Route::delete('/{user}', [UserController::class, 'delete'])->name('user.delete');
+    Route::post('/{user}/promote-to-admin', [UserController::class, 'promoteToAdmin'])->name('user.promoteToAdmin');
 });
