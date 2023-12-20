@@ -40,4 +40,9 @@ class AuthController extends Controller
         return $this->responseService->resolveResponse("Update Profile Successful", $result);
     }
 
+    public function profile()
+    {
+        $result = auth()->user();
+        return $this->responseService->resolveResponse("Update Profile Successful", $result);
+    }
 }
