@@ -3,6 +3,7 @@
 namespace App\Repositories\User;
 
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Carbon;
 use App\Repositories\Base\BaseRepository;
 use Illuminate\Support\Facades\Log;
@@ -33,5 +34,13 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function getByEmail(string $email)
     {
         return $this->model->where('email', $email)->first();
+    }
+
+    public function promoteToAdmin(array $attributes, string $id): ?User
+    {
+        $user = $this->model->findOrFail($id);
+        $user->update(['role_id' => Role::ADMINISTRATOR_ID]); 
+
+        return $user;
     }
 }

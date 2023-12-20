@@ -20,6 +20,12 @@ class UserController extends Controller
         $this->responseService = $responseService;
     }
 
+    public function promoteToAdmin(Request $request, $id)
+    {
+        $results = $this->modelRepository->promoteToAdmin($request->all(), $id);
+        return $this->responseService->successResponse($this->name, $results);
+    }
+
     public function index()
     {
         $results = $this->modelRepository->lists(request(['search']));
